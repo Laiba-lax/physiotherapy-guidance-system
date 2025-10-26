@@ -1,3 +1,12 @@
 # Physiotherapy Guidance System
 
 [Research Papers]( https://drive.google.com/drive/folders/1QKyY_HpdFIbNe_kM3I0IyrTzue68h_qv?usp=sharing)
+
+
+Most relevant:
+- Gait analysis for rehab: <https://pmc.ncbi.nlm.nih.gov/articles/PMC1421413/>
+- Deep learning framework for assesing physical health rehab: <https://pmc.ncbi.nlm.nih.gov/articles/PMC7032994/>
+- An Approach for the Evaluation of Human Activities in Physical Therapy Scenarios: https://www.researchgate.net/publication/282926815_An_Approach_for_the_Evaluation_of_Human_Activities_in_Physical_Therapy_Scenarios
+-  A Machine Learning App for Monitoring Physical Therapy at Home : https://www.mdpi.com/1424-8220/24/1/158
+-  Smartphone-Based Markerless Motion Capture for Accessible Rehabilitation: A Computer Vision Study : https://www.mdpi.com/1424-8220/25/17/5428
+- Vision-Based Human Pose Estimation via Deep Learning: A Survey: https://www.researchgate.net/publication/365586128_Vision-Based_Human_Pose_Estimation_via_Deep_Learning_A_Survey
