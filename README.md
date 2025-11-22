@@ -18,3 +18,8 @@ Most relevant:
 - on the patient side, they can view the reference video of themselves
 - they then start performing the exercise and through their webcam, a pose estimation model can ensure that the poses they are doing right now are correct. If they're not correct, show an error through text
 
+
+- react native + expo 
+
+
+[project execution details](https://docs.google.com/document/d/1YLlsXs6PohqPOHPkVtw_cxcwsSvQzb_9BiaVTnScwpc/edit?usp=sharing)
