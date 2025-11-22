@@ -9,8 +9,16 @@ import { Text, View, StyleSheet} from "react-native";
 
 export default function RecordScreen() {
     return(
-        <View>
-            <Text>Recording Screen</Text>
+        <View style={styles.container}>
+            <Text>Recording Screen [Laiba's Domain for now]</Text>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    }
+})

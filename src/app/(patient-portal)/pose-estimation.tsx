@@ -8,8 +8,16 @@ import { Text, View, StyleSheet} from "react-native";
 
 export default function PoseEstimationScreen() {
     return(
-        <View>
-            <Text>This is Pose estimation screen</Text>
+        <View style={styles.container}>
+            <Text>Pose estimation screen [Manahil's domain for now]</Text>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }
+})

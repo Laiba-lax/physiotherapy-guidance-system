@@ -11,10 +11,10 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Hello , Log in to proceed</Text>
-      
-      <Link href="/(doctor-portal)/" style={styles.button}>Log in as a doctor</Link>
-      <Link href="/(patient-portal)/" style={styles.button}>Log in as a patient</Link>
+      <Text>Patient Dashboard</Text>
+      <Link href={"/pose-estimation"} style={styles.button}>
+      <Text>Perform Exercise</Text>
+      </Link>
     </View>
   );
 }
