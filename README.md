@@ -21,5 +21,7 @@ Most relevant:
 
 - react native + expo 
 
+**Very important** : open the src/ folder in vscode, not the parent 'physiotherapy-guidance-system' to avoid confusions
+
 
 [project execution details](https://docs.google.com/document/d/1YLlsXs6PohqPOHPkVtw_cxcwsSvQzb_9BiaVTnScwpc/edit?usp=sharing)
