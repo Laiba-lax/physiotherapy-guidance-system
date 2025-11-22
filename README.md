@@ -10,3 +10,11 @@ Most relevant:
 -  A Machine Learning App for Monitoring Physical Therapy at Home : https://www.mdpi.com/1424-8220/24/1/158
 -  Smartphone-Based Markerless Motion Capture for Accessible Rehabilitation: A Computer Vision Study : https://www.mdpi.com/1424-8220/25/17/5428
 - Vision-Based Human Pose Estimation via Deep Learning: A Survey: https://www.researchgate.net/publication/365586128_Vision-Based_Human_Pose_Estimation_via_Deep_Learning_A_Survey
+
+
+### High level Overview of Deliverables (milestone2)
+- a doctor can record a video and upload it
+- the video is analysed and posture and elements are extracted from that video and stored in db
+- on the patient side, they can view the reference video of themselves
+- they then start performing the exercise and through their webcam, a pose estimation model can ensure that the poses they are doing right now are correct. If they're not correct, show an error through text
+
