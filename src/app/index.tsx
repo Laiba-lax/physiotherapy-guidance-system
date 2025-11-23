@@ -1,8 +1,22 @@
 import { Text, View } from "react-native";
 import { Link } from "expo-router"
 import { StyleSheet } from "react-native";
+import { supabase } from "@/lib/supabase";
+
 
 export default function Index() {
+
+
+  // dummy code - it was just to test if connection to supabase is succesful or not
+
+  async function testConnection() {
+    const { data, error } = await supabase.from('test').select('id').limit(1);
+    if (error) console.log('Connection failed', error);
+    else console.log('Connected');
+  }
+
+  testConnection()
+
   return (
     <View
       style={{
