@@ -12,6 +12,9 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 export default function App() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [isRecording, setIsRecording] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [submittedMessage, setSubmittedMessage] = useState('');
 
   if (!permission) {
     return <View />;
@@ -31,8 +34,57 @@ export default function App() {
     <View style={styles.container}>
       <CameraView style={styles.camera} facing={facing} />
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.recordButton} onPress={() => console.log("Record pressed")}>
-        </TouchableOpacity>
+        {/* Submitted text (when user submits) */}
+        {submittedMessage ? <Text style={styles.submittedText}>{submittedMessage}</Text> : null}
+
+        {/* Confirmation prompt shown after stopping recording */}
+        {showConfirm ? (
+          <View style={styles.confirmBox}>
+            <Text style={styles.confirmText}>What would you like to do?</Text>
+            <View style={styles.confirmButtons}>
+              <TouchableOpacity
+                style={[styles.confirmButton, styles.submitButton]}
+                onPress={() => {
+                  // For now just show a message
+                  setSubmittedMessage('Video submitted');
+                  setShowConfirm(false);
+                  setIsRecording(false);
+                }}
+              >
+                <Text style={styles.confirmButtonText}>Submit</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.confirmButton, styles.startOverButton]}
+                onPress={() => {
+                  // Reset to recording screen (start over)
+                  setSubmittedMessage('');
+                  setShowConfirm(false);
+                  setIsRecording(false);
+                }}
+              >
+                <Text style={styles.confirmButtonText}>Start over</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
+
+        <TouchableOpacity
+          style={[
+            styles.recordButton,
+            isRecording ? styles.recordingButton : null,
+          ]}
+          onPress={() => {
+            if (!isRecording) {
+              // start recording
+              setIsRecording(true);
+              setSubmittedMessage('');
+            } else {
+              // stop recording and show confirmation
+              setShowConfirm(true);
+            }
+          }}
+        />
       </View>
     </View>
   );
@@ -80,5 +132,52 @@ bottomBar: {
     backgroundColor: "red",
     borderWidth: 4,
     borderColor: "white",
+  },
+  recordingButton: {
+    // square appearance when recording
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    backgroundColor: 'red',
+    borderWidth: 4,
+    borderColor: 'white',
+  },
+  submittedText: {
+    color: 'white',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginBottom: 12,
+  },
+  confirmBox: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    padding: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  confirmText: {
+    color: 'white',
+    marginBottom: 8,
+  },
+  confirmButtons: {
+    flexDirection: 'row',
+  },
+  confirmButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginHorizontal: 6,
+    borderRadius: 6,
+  },
+  submitButton: {
+    backgroundColor: '#2ecc71',
+  },
+  startOverButton: {
+    backgroundColor: '#e74c3c',
+  },
+  confirmButtonText: {
+    color: 'white',
+    fontWeight: '600',
   },
 });
