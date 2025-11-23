@@ -10,16 +10,14 @@ import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function App() {
-//   const [facing, setFacing] = useState<CameraType>('back');
+  const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
@@ -28,18 +26,14 @@ export default function App() {
     );
   }
 
-//   function toggleCameraFacing() {
-//     setFacing(current => (current === 'back' ? 'front' : 'back'));
-//   }
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing='back' />
-      {/* <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-          <Text style={styles.text}>Flip Camera</Text>
+      <CameraView style={styles.camera} facing={facing} />
+      <View style={styles.bottomBar}>
+        <TouchableOpacity style={styles.recordButton} onPress={() => console.log("Record pressed")}>
         </TouchableOpacity>
-      </View> */}
+      </View>
     </View>
   );
 }
@@ -72,5 +66,19 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: 'white',
+  },
+bottomBar: {
+    position: "absolute",
+    bottom: 40,
+    width: "100%",
+    alignItems: "center",
+  },
+  recordButton: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: "red",
+    borderWidth: 4,
+    borderColor: "white",
   },
 });
