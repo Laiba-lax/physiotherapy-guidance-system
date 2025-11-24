@@ -9,7 +9,7 @@ import { useState, useRef, useEffect } from 'react';
 import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { VideoView, useVideoPlayer } from 'expo-video';
 import { supabase } from '@/lib/supabase';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
 
 export default function App() {
@@ -39,16 +39,16 @@ export default function App() {
   const player = useVideoPlayer(null);
 
   useEffect(() => {
-    if (recordedUri) {
-      // Load the recorded video and start looping playback in preview
+    if (!recordedUri) return;
+    (async () => {
       try {
-        player.replace(recordedUri);
+        await player.replaceAsync(recordedUri);
         player.loop = true;
         player.play();
       } catch (e) {
         console.warn('Player setup error', e);
       }
-    }
+    })();
   }, [recordedUri]);
 
   if (!cameraPermission) {
@@ -113,7 +113,7 @@ async function submitVideo() {
   setSubmittedMessage('');
 
   try {
-    // 1. Read the recorded file as base64
+    // 1. Read the recorded file as base64 (legacy API is supported in SDK 54)
     const base64 = await FileSystem.readAsStringAsync(recordedUri, {
       encoding: 'base64',
     });
@@ -122,11 +122,16 @@ async function submitVideo() {
     const fileName = `${Date.now()}.mp4`;
     const filePath = `recordings/${fileName}`;
 
-    // 2. Upload base64 string to Supabase storage
+    // 2. Convert base64 to ArrayBuffer (RN-friendly) using a data URL
+    const arrayBuffer = await (
+      await fetch(`data:${contentType};base64,${base64}`)
+    ).arrayBuffer();
+
+    // 3. Upload ArrayBuffer to Supabase Storage (recommended for React Native)
     const { error } = await supabase
       .storage
       .from('reference-videos') // your bucket
-      .upload(filePath, Buffer.from(base64, 'base64'), {
+      .upload(filePath, arrayBuffer, {
         contentType,
         cacheControl: '3600',
         upsert: false,
@@ -197,7 +202,6 @@ async function submitVideo() {
             style={styles.previewFullVideo}
             contentFit="cover"
             nativeControls={false}
-            allowsFullscreen
           />
           {/* Actions overlay */}
           <View style={styles.previewActions}>
