@@ -7,8 +7,10 @@
 import { CameraView, CameraType, useCameraPermissions, useMicrophonePermissions } from 'expo-camera';
 import { useState, useRef, useEffect } from 'react';
 import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Video, ResizeMode } from 'expo-av';
+import { VideoView, useVideoPlayer } from 'expo-video';
 import { supabase } from '@/lib/supabase';
+import * as FileSystem from 'expo-file-system';
+
 
 export default function App() {
   const [facing] = useState<CameraType>('back');
@@ -25,13 +27,29 @@ export default function App() {
   const [uploading, setUploading] = useState(false);
   const [submittedMessage, setSubmittedMessage] = useState('');
 
-  const MAX_DURATION_SECONDS = 20; // 20 seconds
+  const MAX_DURATION_SECONDS = 20; 
 
   // Ask for permissions on mount (camera + mic)
   useEffect(() => {
     if (cameraPermission?.granted === false) requestCameraPermission();
     if (micPermission?.granted === false) requestMicPermission();
   }, [cameraPermission?.granted, micPermission?.granted]);
+
+  // Create a player for preview; keep hook order stable (avoid conditional returns before hooks)
+  const player = useVideoPlayer(null);
+
+  useEffect(() => {
+    if (recordedUri) {
+      // Load the recorded video and start looping playback in preview
+      try {
+        player.replace(recordedUri);
+        player.loop = true;
+        player.play();
+      } catch (e) {
+        console.warn('Player setup error', e);
+      }
+    }
+  }, [recordedUri]);
 
   if (!cameraPermission) {
     return <View />;
@@ -85,32 +103,47 @@ export default function App() {
     } catch {}
   }
 
-  async function submitVideo() {
-    if (!recordedUri) return;
-    setUploading(true);
-    setSubmittedMessage('');
-    try {
-      const resp = await fetch(recordedUri);
-      const blob = await resp.blob();
-      const filePath = `recordings/${Date.now()}.mp4`;
-      const { error } = await supabase
-        .storage
-        .from('videos') // change dis bucket later
-        .upload(filePath, blob, {
-          contentType: 'video/mp4',
-          cacheControl: '3600',
-          upsert: false,
-        });
-      if (error) throw error;
-      setSubmittedMessage('video submitted');
-      // Keep preview visible but you can also reset if desired
-    } catch (err: any) {
-      setSubmittedMessage(`upload failed: ${err?.message ?? 'unknown error'}`);
-    } finally {
-      setUploading(false);
-    }
-  }
+  // (player hook and setup moved above to keep hook order consistent)
 
+
+async function submitVideo() {
+  if (!recordedUri) return;
+
+  setUploading(true);
+  setSubmittedMessage('');
+
+  try {
+    // 1. Read the recorded file as base64
+    const base64 = await FileSystem.readAsStringAsync(recordedUri, {
+      encoding: 'base64',
+    });
+
+    const contentType = 'video/mp4';
+    const fileName = `${Date.now()}.mp4`;
+    const filePath = `recordings/${fileName}`;
+
+    // 2. Upload base64 string to Supabase storage
+    const { error } = await supabase
+      .storage
+      .from('reference-videos') // your bucket
+      .upload(filePath, Buffer.from(base64, 'base64'), {
+        contentType,
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    setSubmittedMessage('video submitted');
+  } catch (err: any) {
+    console.log('Upload error', err);
+    setSubmittedMessage(`upload failed: ${err?.message ?? 'unknown error'}`);
+  } finally {
+    setUploading(false);
+  }
+}
   function startOver() {
     setRecordedUri(null);
     setShowPreview(false);
@@ -159,13 +192,12 @@ export default function App() {
       {/* Full-screen preview like Snapchat */}
       {showPreview && recordedUri ? (
         <View style={styles.previewScreen}>
-          <Video
-            source={{ uri: recordedUri }}
+          <VideoView
+            player={player}
             style={styles.previewFullVideo}
-            resizeMode={ResizeMode.COVER}
-            isLooping
-            shouldPlay
-            useNativeControls={false}
+            contentFit="cover"
+            nativeControls={false}
+            allowsFullscreen
           />
           {/* Actions overlay */}
           <View style={styles.previewActions}>
